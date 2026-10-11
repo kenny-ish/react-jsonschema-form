@@ -1,7 +1,7 @@
 'use client';
 
 import type { FocusEvent, FocusEventHandler, KeyboardEvent, ReactElement } from 'react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { deepEquals } from '@rjsf/utils';
 import { Command as CommandPrimitive } from 'cmdk';
 import { X } from 'lucide-react';
@@ -76,6 +76,12 @@ export function FancyMultiSelect({
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+
+  useLayoutEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.id = id;
+    }
+  });
 
   const selectedItems = useMemo(
     () => items.filter((item) => selected.some((selectedValue) => deepEquals(item.value, selectedValue))),

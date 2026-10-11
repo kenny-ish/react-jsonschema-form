@@ -124,6 +124,37 @@ describe('SelectWidget', () => {
     expect(carOptions[1]).toHaveAttribute('data-selected', 'true');
   });
 
+  test('multi-select input keeps the field id for label association', () => {
+    render(
+      <>
+        <label htmlFor='root_tags'>Tags</label>
+        <SelectWidget
+          {...makeWidgetMockProps({
+            id: 'root_tags',
+            autofocus: false,
+            disabled: false,
+            readonly: false,
+            multiple: true,
+            rawErrors: [],
+            value: [],
+            options: {
+              enumOptions: [
+                { label: 'Car', value: 'car' },
+                { label: 'Bike', value: 'bike' },
+              ],
+            },
+          })}
+        />
+      </>,
+    );
+
+    const input = screen.getByPlaceholderText('Select ...');
+    const label = screen.getByText('Tags');
+    expect(input).toHaveAttribute('id', 'root_tags');
+    expect(label).toHaveAttribute('for', 'root_tags');
+    expect(document.getElementById('root_tags')).toBe(input);
+  });
+
   test('multi-select: hovering over elements with duplicate labels only highlights the correct one by value', async () => {
     const user = userEvent.setup();
     render(

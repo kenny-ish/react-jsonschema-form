@@ -25,6 +25,7 @@ should change the heading of the (upcoming) version to include a major version b
 
 ## @rjsf/shadcn
 
+- Fixed `FancyMultiSelect` not associating its input with the field label, so clicking the label and focusing the first validation error now work ([#5478](https://github.com/rjsf-team/react-jsonschema-form/issues/5478))
 - Fixed `RadioWidget` not showing the selected value with `@radix-ui/react-radio-group` 1.4.x, which ignores the per-item `checked` prop. The `RadioGroup` is now controlled by the encoded option value, so it also follows a form reset or an outside `formData` change ([#5420](https://github.com/rjsf-team/react-jsonschema-form/pull/5420))
 - Updated `lucide-react` to `^1.49.0`, which makes `Trash2` an alias of `Trash`: the remove button's icon class changes from `lucide-trash2` to `lucide-trash`, and the `PlusCircle`/`AlertCircle` icons gain `lucide-plus-circle`/`lucide-alert-circle` classes. Update any CSS or test selectors that target `.lucide-trash2` ([#5420](https://github.com/rjsf-team/react-jsonschema-form/pull/5420))
 
