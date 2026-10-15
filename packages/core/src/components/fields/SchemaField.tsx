@@ -269,6 +269,7 @@ function getFieldComponent<
   rendersOptionsItself: boolean;
   rendersOptionSelector: boolean;
   optionsReplaceNamedField: boolean;
+  ignoredSchemaId?: string;
 } {
   const { widget } = uiOptions;
   const { fields, globalFormOptions } = registry;
@@ -322,8 +323,13 @@ function getFieldComponent<
   if (isDivertedToFallbackUi) {
     componentName = 'FallbackField';
   }
+  let ignoredSchemaId: string | undefined;
   if (schemaId && Object.hasOwn(fields, schemaId)) {
-    componentName = schemaId;
+    if (isComponentType<Field<T, S, F>>(fields[schemaId])) {
+      componentName = schemaId;
+    } else {
+      ignoredSchemaId = describeUnresolvedComponent(schemaId, fields[schemaId], 'registered field', 'MyField');
+    }
   }
 
   /** The one component every answer below is derived from, so that none of them can describe another: the field a
@@ -403,6 +409,7 @@ function getFieldComponent<
     rendersOptionsItself,
     rendersOptionSelector,
     optionsReplaceNamedField,
+    ignoredSchemaId,
   };
 }
 
@@ -566,7 +573,7 @@ function SchemaFieldRender<
     );
   }
   const { ignoredOwnField, ignoredGlobalField } = uiField;
-  const { FieldComponent, rendersOptionSelector, optionsReplaceNamedField } = fieldToRender;
+  const { FieldComponent, rendersOptionSelector, optionsReplaceNamedField, ignoredSchemaId } = fieldToRender;
 
   const { FieldTemplate, DescriptionFieldTemplate, FieldHelpTemplate, FieldErrorTemplate } = getTemplates<T, S, F>(
     registry,
@@ -626,6 +633,12 @@ function SchemaFieldRender<
     logOnce(
       `ui:globalOptions.field ${ignoredGlobalField}, so it is ignored and the fields it applies to are rendered as ` +
         'though no ui:field were given.',
+    );
+  }
+  if (ignoredSchemaId) {
+    logOnce(
+      `schema $id for ${fieldLabelForLog(fieldId, fieldPath)} ${ignoredSchemaId}, so it is ignored and the field is ` +
+        'rendered as though no schema $id field were given.',
     );
   }
 

@@ -307,6 +307,7 @@ describe('SchemaField', () => {
       return <div id='custom' />;
     }
 
+    const consoleWarnSuppression = setupConsoleWarnSuppression();
     const schema: RJSFSchema = {
       type: 'object',
       properties: {
@@ -323,6 +324,26 @@ describe('SchemaField', () => {
       expect(node.querySelectorAll('#custom')).toHaveLength(1);
 
       expect(node.querySelectorAll('label')).toHaveLength(0);
+    });
+
+    it('warns and uses the default field when a schema $id names a non-component', () => {
+      const schemaWithId: RJSFSchema = {
+        type: 'object',
+        properties: { val: { $id: '#/val', type: 'string' } },
+      };
+
+      const { node } = createFormComponent({
+        schema: schemaWithId,
+        fields: { '#/val': (<MyObject />) as unknown as Field },
+      });
+
+      expect(node.querySelector('#custom')).not.toBeInTheDocument();
+      expect(node.querySelector('input#root_val')).toBeInTheDocument();
+      expect(consoleWarnSuppression.consoleSpy).toHaveBeenCalledExactlyOnceWith(
+        `schema $id for "root_val" (val) names a registered field ('#/val') that is a React element rather than a ` +
+          'component (pass MyField, not <MyField />), so it is ignored and the field is rendered as though no schema ' +
+          '$id field were given.',
+      );
     });
 
     it('should use provided direct custom component for specific property', () => {
